@@ -9,13 +9,11 @@ import hashlib
 import sys
 import os
 
-
 # get current directory
 current_dir = os.path.dirname(__file__)
 
 # settings.ini file path
 settings_file_path = current_dir + '/settings/settings.ini'
-
 
 # define config
 config = configparser.ConfigParser()
@@ -27,14 +25,14 @@ SHA256_HASHES_pack2 = (current_dir + '\\hard_signatures\\SHA256-Hashes_pack2.txt
 SHA256_HASHES_pack3 = (current_dir + '\\hard_signatures\\SHA256-Hashes_pack3.txt')
 
 # define Stuff
-VERSION = "2.5"
-DEV     = "cookie0_o, Len-Stevens"
+VERSION = "1"
+DEV = "Magzhan, Ramazan"
 
 # url´s
-Report_issues = "t.me/@bxbsnbdnxbbebsbbzbbsbbsbsbsbbwbw"
-Submit_sample = "https://github.com/Len-Stevens/Python-Antivirus/discussions/8"
+Submit_sample = ""
 virus_total_api = "https://www.virustotal.com/api/v3/files/report"
-meta_defender_api = "https://api.metadefender.com/v4/hash/" # + hash
+meta_defender_api = "https://api.metadefender.com/v4/hash/"  # + hash
+
 
 # save settings to settings/settings.ini
 def SaveSettings(self):
@@ -55,44 +53,45 @@ def SaveSettings(self):
     else:
         config["-settings-"]["Style"] = "Light"
 
-    with open(settings_file_path, 'w') as configfile: # save
+    with open(settings_file_path, 'w') as configfile:  # save
         config.write(configfile)
 
     return
 
+
 # removed thinker from project.
 # program will now check if system is Win or Linux (if OS is Linux .ico files will not be used)
-    
+
 # remove file
 def removeFile(file):
-        try:
-            os.remove(file)
-        except:
-            # file coudn't be deleted = show error message
-            msgBox = QtWidgets.QMessageBox()
-            msgBox.setIcon(QtWidgets.QMessageBox.Critical)
-            msgBox.setText("Error")
-            msgBox.setInformativeText(f"""\
+    try:
+        os.remove(file)
+    except:
+        # file coudn't be deleted = show error message
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Critical)
+        msgBox.setText("Error")
+        msgBox.setInformativeText(f"""\
 File couldn't be deleted.
 File: {file}"
             """)
-            # remove window title bar
-            msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-            msgBox.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-            msgBox.exec_()
-        finally:
-            # file deleted = show success message
-            msgBox = QtWidgets.QMessageBox()
-            msgBox.setIcon(QtWidgets.QMessageBox.Information)
-            msgBox.setText("Info")
-            msgBox.setInformativeText(f"""\
+        # remove window title bar
+        msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        msgBox.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        msgBox.exec_()
+    finally:
+        # file deleted = show success message
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Information)
+        msgBox.setText("Info")
+        msgBox.setInformativeText(f"""\
 File successfully deleted.
 File: {file}"
             """)
-            # remove window title bar
-            msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-            msgBox.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-            msgBox.exec_()
+        # remove window title bar
+        msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        msgBox.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        msgBox.exec_()
 
 
 # display results
@@ -144,13 +143,11 @@ def displayResults_CLEAN(self, file):
 def scan(file, self, MainWindow):
     try:
 
-    
         # default virus found to false
         virus_found = False
 
-
         # open file and get hash
-        with open(file,"rb") as f:
+        with open(file, "rb") as f:
             bytes = f.read()
             readable_hash = hashlib.sha256(bytes).hexdigest();
 
@@ -160,7 +157,7 @@ def scan(file, self, MainWindow):
         # check if from the selected is = to a hash in the virus hash list
 
         # SHA256 HASHES check + pack 1
-        with open(SHA256_HASHES_pack1,'r') as f:
+        with open(SHA256_HASHES_pack1, 'r') as f:
             lines = [line.rstrip() for line in f]
             for line in lines:
                 if str(readable_hash) == str(line.split(";")[0]):
@@ -174,7 +171,7 @@ def scan(file, self, MainWindow):
             pass
         if virus_found == False:
             # SHA256 HASHES check + pack 2
-            with open(SHA256_HASHES_pack2,'r') as f:
+            with open(SHA256_HASHES_pack2, 'r') as f:
                 lines = [line.rstrip() for line in f]
                 for line in lines:
                     if str(readable_hash) == str(line.split(";")[0]):
@@ -185,7 +182,7 @@ def scan(file, self, MainWindow):
             pass
         if virus_found == False:
             # SHA256 HASHES check + pack 3
-            with open(SHA256_HASHES_pack3,'r') as f:
+            with open(SHA256_HASHES_pack3, 'r') as f:
                 lines = [line.rstrip() for line in f]
                 for line in lines:
                     if str(readable_hash) == str(line.split(";")[0]):
@@ -247,7 +244,7 @@ Please enter a valid Virus Total API key.
                             displayResults_VIRUS(self, file)
             else:
                 pass
-        
+
         # show error when virus total api was not able to scan the file
         except:
             msgBox = QtWidgets.QMessageBox()
@@ -280,7 +277,7 @@ Please enter a valid Meta Defender API key.
                     msgBox.exec_()
                 # if api key is not empty then scan the hash of the file
                 else:
-                    M_header=({"apikey": MetaDefenderApiKey})
+                    M_header = ({"apikey": MetaDefenderApiKey})
                     M_analysis = requests.get(meta_defender_api + readable_hash, headers=M_header)
                     M_analysis_json = M_analysis.json()
                     M_detections = M_analysis_json["scan_results"]["total_detected_avs"]
@@ -328,7 +325,7 @@ Cant scan file with Meta Defender.
             msgBox.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             msgBox.exec_()
 
-        
+
         finally:
             # goto hidden results tab
             self.Tabs.setCurrentIndex(2)
@@ -359,27 +356,26 @@ No file selected or \nProgram has no permission to access file.
 
 # BROWSE FILE
 def browseFiles(MainWindow, self):
-
     # change tab to loading tab
     self.Tabs.setCurrentIndex(3)
 
     filepath_raw, filename_raw = os.path.split(str(QtWidgets.QFileDialog.getOpenFileName(MainWindow,
-                                                                    "Select File",
-                                                                    "YOUR-FILE-PATH")))
-    
+                                                                                         "Select File",
+                                                                                         "YOUR-FILE-PATH")))
+
     filepath_raw = filepath_raw.replace("('", "")
     filename = filename_raw.replace("', 'All Files (*)')", "")
 
     # display file name
     self.FileName.setText("File Name: " + filename)
     # close thinker window
-    
+
     # get full path to file
     filepath = (filepath_raw + "/" + filename)
-    
+
     # display file path
     self.FilePath.setText("File Path:  " + filepath)
-    
+
     scan(filepath, self, MainWindow)
 
 
@@ -408,9 +404,10 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(15)
         self.HomeTabButton.setFont(font)
-        self.HomeTabButton.setStyleSheet("background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));\n"
-"image: url(:/res/SideBar/home.svg);\n"
-"")
+        self.HomeTabButton.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));\n"
+            "image: url(:/res/SideBar/home.svg);\n"
+            "")
         self.HomeTabButton.setText("")
         self.HomeTabButton.setFlat(True)
         self.HomeTabButton.setObjectName("HomeTabButton")
@@ -419,8 +416,9 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(15)
         self.SettingsTabButton.setFont(font)
-        self.SettingsTabButton.setStyleSheet("background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));\n"
-"image: url(:/res/SideBar/settings.svg);")
+        self.SettingsTabButton.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));\n"
+            "image: url(:/res/SideBar/settings.svg);")
         self.SettingsTabButton.setText("")
         self.SettingsTabButton.setFlat(True)
         self.SettingsTabButton.setObjectName("SettingsTabButton")
@@ -447,13 +445,11 @@ class Ui_MainWindow(object):
         self.SelectFileButton.setFont(font)
         self.SelectFileButton.setFlat(False)
         self.SelectFileButton.setObjectName("SelectFileButton")
-        self.ReportIssueButton = QtWidgets.QPushButton(self.HomeTab)
-        self.ReportIssueButton.setGeometry(QtCore.QRect(5, 85, 121, 31))
+
+
         font = QtGui.QFont()
         font.setPointSize(11)
-        self.ReportIssueButton.setFont(font)
-        self.ReportIssueButton.setFlat(False)
-        self.ReportIssueButton.setObjectName("ReportIssueButton")
+
         self.Tabs.addWidget(self.HomeTab)
         self.SettingsTab = QtWidgets.QWidget()
         self.SettingsTab.setObjectName("SettingsTab")
@@ -587,7 +583,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_3.setFont(font)
-        self.label_3.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_3.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.label_3.setObjectName("label_3")
         self.DetectionsText = QtWidgets.QLabel(self.VirusTotalWidget)
         self.DetectionsText.setGeometry(QtCore.QRect(10, 20, 161, 31))
@@ -603,7 +599,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_5.setFont(font)
-        self.label_5.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_5.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.label_5.setObjectName("label_5")
         self.label_3.raise_()
         self.label_5.raise_()
@@ -616,7 +612,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_4.setFont(font)
-        self.label_4.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_4.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.label_4.setObjectName("label_4")
         self.MetaDefenderDetectionsText = QtWidgets.QLabel(self.MetaDefenderWidget)
         self.MetaDefenderDetectionsText.setGeometry(QtCore.QRect(10, 20, 201, 31))
@@ -632,7 +628,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_6.setFont(font)
-        self.label_6.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_6.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.label_6.setObjectName("label_6")
         self.label_4.raise_()
         self.label_6.raise_()
@@ -661,7 +657,8 @@ class Ui_MainWindow(object):
         self.Tabs.addWidget(self.LoadingPage)
         self.version_display = QtWidgets.QLabel(MainWindow)
         self.version_display.setGeometry(QtCore.QRect(1, 284, 47, 20))
-        self.version_display.setStyleSheet("background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));")
+        self.version_display.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.1468, fy:0.1468, stop:1 rgba(0, 0, 0, 0));")
         self.version_display.setObjectName("version_display")
         self.SideBar_2 = QtWidgets.QLabel(MainWindow)
         self.SideBar_2.setGeometry(QtCore.QRect(-10, -10, 71, 51))
@@ -687,18 +684,16 @@ class Ui_MainWindow(object):
         MetaDefenderApiKey = config.get('-settings-', 'MetaDefenderApiKey')
         style = config.get('-settings-', 'Style')
 
-
         # apply dark default theme
         from qt_material import apply_stylesheet
         extra = {
-    
+
             # Density Scale
             'density_scale': '-2',
         }
         objects = [
             # buttons
             self.SelectFileButton,
-            self.ReportIssueButton,
             self.LightModeButton,
             self.SaveSettingsButton,
             self.LightModeButton,
@@ -743,8 +738,7 @@ class Ui_MainWindow(object):
                 self.LoadingPageTitle.setStyleSheet("background-color: rgb(182, 182, 182);")
                 self.LightModeButton.setText("Dark Mode")
 
-
-        # if lightmode is enabled, apply light theme and change button text 
+        # if lightmode is enabled, apply light theme and change button text
         def style_mode(self):
             if self.LightModeButton.text() == "Light Mode":
                 for object in objects:
@@ -782,7 +776,6 @@ class Ui_MainWindow(object):
                     self.VirusResultsTitle.setStyleSheet("background-color: rgb(81, 89, 97);")
                     self.LoadingPageTitle.setStyleSheet("background-color: rgb(81, 89, 97);")
                 self.LightModeButton.setText("Light Mode")
-            
 
         if VirustotalScan == 'True':
             self.UseVirusTotalApiCheckBox.setChecked(True)
@@ -807,8 +800,6 @@ class Ui_MainWindow(object):
                 # light mode
                 self.CurrentTabSettings.setStyleSheet("background-color: rgb(182, 182, 182);")
                 self.CurrentTabHome.setStyleSheet("background-color: rgb(231, 84, 128);")
-                
-
 
             return
 
@@ -823,17 +814,13 @@ class Ui_MainWindow(object):
                 # light mode
                 self.CurrentTabSettings.setStyleSheet("background-color: rgb(231, 84, 128);")
                 self.CurrentTabHome.setStyleSheet("background-color: rgb(182, 182, 182);")
-                
-            return	
 
+            return
 
         # change tabs buttons
         self.HomeTabButton.clicked.connect(lambda: change_tab_settings(self))
 
         self.SettingsTabButton.clicked.connect(lambda: change_tab_home(self))
-
-        # report issue button
-        self.ReportIssueButton.clicked.connect(lambda: webbrowser.open_new(Report_issues))
 
         # open file dialog and scan file
         self.SelectFileButton.clicked.connect(lambda: browseFiles(MainWindow, self))
@@ -844,15 +831,14 @@ class Ui_MainWindow(object):
         # style mode button
         self.LightModeButton.clicked.connect(lambda: style_mode(self))
 
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"-AntiVirus- [v{VERSION}] [dev; {DEV}]"))
         self.HomeTitle.setText(_translate("MainWindow", "Home"))
         self.SelectFileButton.setText(_translate("MainWindow", "Scan File"))
-        self.ReportIssueButton.setText(_translate("MainWindow", "report issue"))
         self.SettingsTitle.setText(_translate("MainWindow", "Settings"))
-        self.UseVirusTotalApiCheckBox.setText(_translate("MainWindow", "Use Virus Total api (only files under 32MB) (files will be uploaded publicly)"))
+        self.UseVirusTotalApiCheckBox.setText(
+            _translate("MainWindow", "Use Virus Total api (only files under 32MB) (files will be uploaded publicly)"))
         self.VirusTotalApiKey.setPlaceholderText(_translate("MainWindow", "Enter your Virus Total api Key here"))
         self.SaveSettingsButton.setText(_translate("MainWindow", "Save Config"))
         self.UseMetaDefenderApiCheckBox.setText(_translate("MainWindow", "Use Meta Defender api to check hash"))
@@ -874,6 +860,8 @@ class Ui_MainWindow(object):
         self.LoadingPageTitle.setText(_translate("MainWindow", "..."))
         self.label_7.setText(_translate("MainWindow", "loading..."))
         self.version_display.setText(_translate("MainWindow", f"v{VERSION}"))
+
+
 # import resources
 import res.res_rc
 
